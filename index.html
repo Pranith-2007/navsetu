@@ -7,7 +7,20 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div id="app" class="app">
+<div id="loginScreen" class="login-screen">
+  <div class="login-card">
+    <div class="login-brand"><div class="brand-mark">NS</div><div><b>Navसेतु</b><small>WAREHOUSE CONTROL</small></div></div>
+    <div class="login-copy"><h1>Welcome back</h1><p>Sign in to access the fleet operations console.</p></div>
+    <form id="loginForm" class="login-form">
+      <label>Username<input id="loginUser" autocomplete="username" placeholder="Enter username" required></label>
+      <label>Password<div class="password-wrap"><input id="loginPass" type="password" autocomplete="current-password" placeholder="Enter password" required><button type="button" id="togglePass">Show</button></div></label>
+      <div id="loginError" class="login-error" aria-live="polite"></div>
+      <button class="login-submit" type="submit">Sign in <span>→</span></button>
+    </form>
+    <div class="login-demo"><b>Demo access</b><span>operator</span><span>navsetu123</span></div>
+  </div>
+</div>
+<div id="app" class="app auth-hidden">
 <aside class="sidebar">
   <div class="brand"><div class="brand-mark">NS</div><div><b>Navसेतु</b><small>WAREHOUSE FLEET</small></div></div>
   <div class="side-title">OPERATIONS</div>
@@ -26,7 +39,7 @@
 <main>
 <header class="topbar">
   <div><div class="crumb">SHIP P262123 · CONSOLE v1.4</div><h1 id="title">Overview</h1><p id="subtitle">Real-time warehouse fleet monitoring and coordination</p></div>
-  <div class="top-actions"><div class="system-status"><i></i> System <b>MONITORING</b> <span>•</span> <i class="wifi"></i> Wi-Fi primary</div><button class="theme" id="theme">☾ <span>Dark</span></button><div class="operator"><b>PS</b><span>P. Shetty<small>Shift operator</small></span></div></div>
+  <div class="top-actions"><div class="system-status"><i></i> System <b>MONITORING</b> <span>•</span> <i class="wifi"></i> Wi-Fi primary</div><button class="theme" id="theme">☾ <span>Dark</span></button><div class="operator"><b>PS</b><span>P. Shetty<small>Shift operator</small></span><button class="logout-btn" id="logoutBtn" type="button">Logout</button></div></div>
 </header>
 <div id="content"></div>
 </main>

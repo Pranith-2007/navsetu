@@ -587,3 +587,35 @@ document.querySelector('#theme').onclick=()=>{dark=!dark;document.body.classList
 
 showPage('overview');
 requestAnimationFrame(animate);
+
+/* Demo authentication gate for Navसेतु. Frontend-only demo; not production security. */
+(function initNavsetuLogin(){
+  const loginScreen=document.querySelector('#loginScreen');
+  const app=document.querySelector('#app');
+  const form=document.querySelector('#loginForm');
+  const user=document.querySelector('#loginUser');
+  const pass=document.querySelector('#loginPass');
+  const error=document.querySelector('#loginError');
+  const toggle=document.querySelector('#togglePass');
+  const logout=document.querySelector('#logoutBtn');
+  if(!loginScreen||!app||!form) return;
+  const AUTH_KEY='navsetu_demo_authenticated';
+  function showDashboard(){loginScreen.style.display='none';app.classList.remove('auth-hidden');}
+  function showLogin(){loginScreen.style.display='flex';app.classList.add('auth-hidden'); user.value='';pass.value='';error.textContent='';}
+  if(sessionStorage.getItem(AUTH_KEY)==='true') showDashboard(); else showLogin();
+  form.addEventListener('submit',function(e){
+    e.preventDefault();
+    const u=user.value.trim(), p=pass.value;
+    if(u==='operator' && p==='navsetu123'){
+      sessionStorage.setItem(AUTH_KEY,'true');
+      error.textContent='';
+      showDashboard();
+      if(typeof toastMsg==='function') toastMsg('Signed in successfully');
+    } else {
+      error.textContent='Invalid username or password. Use the demo credentials below.';
+      pass.select();
+    }
+  });
+  toggle.addEventListener('click',function(){const hidden=pass.type==='password';pass.type=hidden?'text':'password';toggle.textContent=hidden?'Hide':'Show';});
+  if(logout) logout.addEventListener('click',function(){sessionStorage.removeItem(AUTH_KEY);showLogin();});
+})();
