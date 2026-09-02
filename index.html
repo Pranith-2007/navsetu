@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Navसेतु — Warehouse Control</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app" class="app">
+<aside class="sidebar">
+  <div class="brand"><div class="brand-mark">NS</div><div><b>Navसेतु</b><small>WAREHOUSE FLEET</small></div></div>
+  <div class="side-title">OPERATIONS</div>
+  <button class="nav active" data-page="overview"><span class="ico">▦</span><span>Overview</span></button>
+  <button class="nav" data-page="robots"><span class="ico">◉</span><span>Live Fleet</span><em id="robotCount">8</em></button>
+  <button class="nav" data-page="map"><span class="ico">⌖</span><span>Warehouse Map</span></button>
+  <button class="nav" data-page="tasks"><span class="ico">✓</span><span>Tasks</span><em>6</em></button>
+  <button class="nav" data-page="conflicts"><span class="ico">△</span><span>Conflicts</span><em class="red">3</em></button>
+  <button class="nav" data-page="routing"><span class="ico">↝</span><span>Rerouting</span><em class="amber">2</em></button>
+  <button class="nav" data-page="communication"><span class="ico">⌁</span><span>Communication</span></button>
+  <button class="nav" data-page="analytics"><span class="ico">▥</span><span>Analytics</span></button>
+  <div class="side-title">SYSTEM</div>
+  <button class="nav" data-page="settings"><span class="ico">⚙</span><span>Settings</span></button>
+  <div class="side-foot"><div><i class="online-dot"></i> Robots online <b>8/8</b></div><small>Zone WH-01 / NORTH · Edge cluster A</small></div>
+</aside>
+<main>
+<header class="topbar">
+  <div><div class="crumb">SHIP P262123 · CONSOLE v1.4</div><h1 id="title">Overview</h1><p id="subtitle">Real-time warehouse fleet monitoring and coordination</p></div>
+  <div class="top-actions"><div class="system-status"><i></i> System <b>MONITORING</b> <span>•</span> <i class="wifi"></i> Wi-Fi primary</div><button class="theme" id="theme">☾ <span>Dark</span></button><div class="operator"><b>PS</b><span>P. Shetty<small>Shift operator</small></span></div></div>
+</header>
+<div id="content"></div>
+</main>
+<div id="toast"></div>
+</div>
+<script src="script.js"></script>
+</body></html>
