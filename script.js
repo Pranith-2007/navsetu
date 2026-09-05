@@ -229,7 +229,7 @@ function overview(){
   bindMapInteractions();
 }
 
-function robotRow(r){return `<div class="robot-row"><div class="robot-name"><span class="mini-bot" style="--rc:${r.color}">${r.id}</span><div><b>${r.status === 'NAVIGATING'?'MOVING' : r.status}</b><small>${esc(r.task||'Live route telemetry')}</small></div></div><div class="battery"><span>${Math.round(r.battery)}%</span><i><em style="width:${r.battery}%"></em></i></div><div class="speed">${r.speed.toFixed(1)}<small> m/s</small></div><button onclick="selectRobot('${r.id}')">→</button></div>`}
+function robotRow(r){return `<div class="robot-row"><div class="robot-name"><span class="mini-bot" style="--rc:${r.color}">${r.id}</span><div><b>${r.status === 'NAVIGATING'?'MOVING':r.status}</b> <small>${esc(r.task||'Live route telemetry')}</small></div></div><div class="battery"><span>${Math.round(r.battery)}%</span><i><em style="width:${r.battery}%"></em></i></div><div class="speed">${r.speed.toFixed(1)}<small> m/s</small></div><button onclick="selectRobot('${r.id}')">→</button></div>`}
 function conflictRow(c){return `<div class="conflict-row"><strong>${c.id}</strong><span>${c.pair}</span><b>${c.node}</b><button onclick="resolveConflict('${c.id}')">${c.status==='RESOLVED'?'Resolved':'Resolve'}</button></div>`}
 
 function detailHTML(){const r=robots.find(x=>x.id===selected)||robots[0];return `<div class="detail-title"><div class="bot-big">${r.id}</div><div><h2>${r.id} · Edge robot</h2><small>Route ${r.route.join(' → ')}</small></div><span class="status ${statusClass(r.status)}">${r.status}</span></div><div class="tele-grid"><div><small>BATTERY</small><b>${Math.round(r.battery)}%</b></div><div><small>SPEED</small><b>${r.speed.toFixed(1)} m/s</b></div><div><small>PAYLOAD</small><b>${r.payload}</b></div><div><small>TARGET</small><b>${r.destination}</b></div><div><small>PICKUP</small><b>${r.pickup||'—'}</b></div></div><div class="taskbox"><small>CURRENT MISSION</small><b>${r.task||'Live route navigation'}</b><span>Network: ${r.id==='R04'?'Wi-Fi + UWB fallback':'Wi-Fi primary'}</span></div><div class="control-row"><button class="primary" onclick="sendRobot('${r.id}')">Dispatch</button><button onclick="pauseRobot('${r.id}')">${r.status==='WAITING'?'Resume':'Pause'}</button><button class="danger" onclick="stopRobot('${r.id}')">E-Stop</button></div>`}
@@ -237,7 +237,7 @@ function detailHTML(){const r=robots.find(x=>x.id===selected)||robots[0];return 
 function robotsPage(){content.innerHTML=`<div class="page-grid"><section class="card panel"><div class="section-head"><div><b>LIVE FLEET</b><small>8 simulated edge robots · live telemetry</small></div><button class="primary" onclick="resumeFleet()">▶ Resume fleet</button></div>${robots.map(robotRow).join('')}</section><section class="card robot-detail">${detailHTML()}</section></div><section class="card list-card"><div class="section-head"><div><b>FLEET HEALTH</b><small>Connectivity, battery and navigation state</small></div><button onclick="toastMsg('Fleet health check completed')">Run health check</button></div><div class="table-row header"><span>ROBOT</span><span>MISSION</span><span>NETWORK</span><span>BATTERY</span><span>STATE</span></div>${robots.map(r=>`<div class="table-row"><b>${r.id}</b><span>${r.task||'Live navigation'}</span><span>${r.id==='R04'?'Wi-Fi + UWB fallback':'Wi-Fi primary'}</span><span>${Math.round(r.battery)}%</span><span class="pill ${r.status==='NAVIGATING'?'green':r.status==='WAITING'?'amber':r.status==='CHARGING'?'green':'red'}">${r.status}</span></div>`).join('')}</section>`}
 function mapPage(){content.innerHTML=`<section class="card fullmap">${mapHTML()}<div class="map-command"><button onclick="resumeFleet()">▶ Start simulation</button><button onclick="pauseFleet()">Ⅱ Pause all</button><button class="danger" onclick="stopFleet()">■ Emergency stop</button></div></section>`;bindMapInteractions();updateMapInsights()}
 function tasksPage(){const tasks=[['T-114','R02','Rack B2 → Packing','HIGH','ACTIVE'],['T-113','R04','Rack C1 → Inbound','NORMAL','ACTIVE'],['T-104','R01','Rack A3 → Outbound','NORMAL','ACTIVE'],['T-099','R03','Charging / standby','LOW','QUEUED'],['T-118','R05','Rack C2 → Packing','NORMAL','QUEUED'],['T-121','R08','Aisle 3 → Rack B3','LOW','ACTIVE']];content.innerHTML=`<section class="card list-card"><div class="section-head"><div><b>TASK QUEUE</b><small>6 assignments · priority-aware allocation</small></div><button class="primary" onclick="toastMsg('New task created in simulation queue')">＋ New task</button></div><div class="table-row header"><span>ID</span><span>ROBOT</span><span>ROUTE</span><span>PRIORITY</span><span>STATE</span></div>${tasks.map(t=>`<div class="table-row"><b>${t[0]}</b><span>${t[1]}</span><span>${t[2]}</span><span class="pill ${t[3]==='HIGH'?'red':t[3]==='NORMAL'?'amber':'green'}">${t[3]}</span><span>${t[4]}</span></div>`).join('')}</section>`}
-function conflictsPage(){content.innerHTML=`<section class="card list-card"><div class="section-head"><div><b>CONFLICT RESOLUTION CENTER</b><small>Predict → negotiate → reserve → reroute</small></div><button class="primary" onclick="resolveAll()">Resolve all safe conflicts</button></div><div class="table-row header"><span>ID</span><span>ROBOTS</span><span>ZONE</span><span>ETA</span><span>STATE</span></div>${conflicts.map(c=>`<div class="table-row"><b>${c.id}</b><span>${c.pair}</span><span>${c.node}</span><span>${c.eta}</span><span class="pill ${c.severity==='HIGH'?'red':c.severity==='MED'?'amber':'green'}">${c.status}</span></div>`).join('')}</section><div class="bottom-cards"><section class="card module"><div class="module-icon">△</div><h2>Prediction engine</h2><p>Collision guard evaluates robot position, velocity, route reservation and junction priority every control cycle.</p><div class="module-grid"><div><small>LOOKAHEAD</small><b>12 s</b></div><div><small>CHECK RATE</small><b>10 Hz</b></div><div><small>OPEN</small><b class="redtxt">${conflicts.filter(c=>c.status!=='RESOLVED').length.toString().padStart(2,'0')}</b></div><div><small>RESOLVED</small><b class="greentxt">18</b></div></div></section><section class="card module"><div class="module-icon">⇄</div><h2>Priority arbitration</h2><p>Deadlock prevention gives the higher-priority task a temporary junction reservation while the other robot waits or reroutes.</p><button class="primary" onclick="toastMsg('Priority arbitration simulation executed')">Run arbitration</button></section></div>`}
+function conflictsPage(){content.innerHTML=`<section class="card list-card"><div class="section-head"><div><b>CONFLICT RESOLUTION CENTER</b><small>Predict → negotiate → reserve → reroute</small></div><button class="primary" onclick="resolveAll()">Resolve all safe conflicts</button></div><div class="table-row header"><span>ID</span><span>ROBOTS</span><span>ZONE</span><span>ETA</span><span>STATE</span></div>${conflicts.map(c=>`<div class="table-row"><b>${c.id}</b><span>${c.pair}</span><span>${c.node}</span><span>${c.eta}</span><span class="pill ${c.severity==='HIGH'?'red':c.severity==='MED'?'amber':'green'}">${c.status}</span></div>`).join('')}</section><div class="bottom-cards"><section class="card module"><div class="module-icon">△</div><h2>Prediction engine</h2><p>Collision guard evaluates robot position, velocity, route reservation and junction priority every control cycle.</p><div class="module-grid"><div><small>LOOKAHEAD</small><b>12 s</b></div><div><small>CHECK RATE</small><b>10 Hz</b></div><div><small>OPEN</small><b class="redtxt">${conflicts.filter(c=>c.status!=='RESOLVED').length.toString().padStart(2,'0')}</b></div><div><small>RESOLVED</small><b class="greentxt">18</b></div></div></section><section class="card module"><div class="module-icon">⇄</div><h2>Priority arbitration</h2><p>Deadlock prevention gives the higher-priority task a temporary junction reservation while the other robot waits or reroutes.</p><button class="primary" onclick="runArbitration()">Run arbitration</button></section></div>`}
 function routingPage(){content.innerHTML=`<section class="card route-card"><div class="section-head"><div><b>REROUTING CONTROL</b><small>Dynamic alternate-path selection and congestion handling</small></div><button class="primary" onclick="runReroute()">↝ Run route optimizer</button></div>${reroutes.map(r=>`<div class="route-row"><strong>${r.id}</strong><span><b>${r.robot}</b> · ${r.from}<small style="display:block;color:#6e7b84;margin-top:3px">Reason: ${r.reason} · via ${r.via}</small></span><span><div class="route-line"><i></i></div><small style="display:block;color:#71808a;margin-top:3px">Distance ${r.gain}</small></span><span class="pill ${r.state==='ACTIVE'?'amber':'green'}">${r.state}</span></div>`).join('')}</section>`}
 function communicationPage(){content.innerHTML=`<section class="card list-card"><div class="section-head"><div><b>COMMUNICATION FABRIC</b><small>Decentralized edge-to-edge fleet connectivity</small></div><button onclick="toastMsg('Network diagnostics complete')">Run diagnostics</button></div><div class="table-row header"><span>NODE</span><span>PRIMARY</span><span>FALLBACK</span><span>SIGNAL</span><span>STATE</span></div>${robots.map(r=>`<div class="table-row"><b>${r.id}</b><span>Wi-Fi 5 GHz</span><span>${r.id==='R04'?'UWB':'Bluetooth mesh'}</span><span>${r.id==='R04'?'-58':'-42'} dBm</span><span class="pill green">CONNECTED</span></div>`).join('')}</section>`}
 function analyticsPage(){content.innerHTML=`<div class="metrics"><div><small>UTILIZATION</small><b>82%</b></div><div><small>AVG SPEED</small><b>1.1 m/s</b></div><div><small>MISSIONS TODAY</small><b>128</b></div><div><small>CONFLICTS</small><b>21</b></div><div><small>REROUTES</small><b>17</b></div><div><small>SUCCESS RATE</small><b class="greentxt">98.4%</b></div></div><div class="bottom-cards"><section class="card module"><div class="module-icon">▥</div><h2>Fleet utilization</h2><p>Active travel time remains highest around outbound and packing lanes, with charging automatically scheduled during low-demand windows.</p><div class="module-grid"><div><small>R01</small><b>89%</b></div><div><small>R02</small><b>92%</b></div><div><small>R03</small><b>41%</b></div><div><small>R04</small><b>84%</b></div></div></section><section class="card module"><div class="module-icon">△</div><h2>Safety performance</h2><p>No collision events recorded. Predicted conflicts are being handled by priority arbitration and local rerouting.</p><div class="module-grid"><div><small>COLLISIONS</small><b class="greentxt">0</b></div><div><small>NEAR MISSES</small><b>3</b></div><div><small>ESTOP</small><b>0</b></div><div><small>GUARD</small><b class="greentxt">ON</b></div></div></section></div>`}
@@ -277,6 +277,75 @@ function pauseFleet(){running=false;robots.forEach(r=>{if(r.status==='NAVIGATING
 function stopFleet(){running=false;robots.forEach(r=>{r.status='IDLE';r.speed=0});toastMsg('EMERGENCY STOP issued to fleet');showPage(activePage)}
 function resolveConflict(id){const c=conflicts.find(x=>x.id===id);if(c)c.status='RESOLVED';toastMsg(`${id} resolved — alternate path reserved`);showPage('conflicts')}
 function resolveAll(){conflicts.forEach(c=>c.status='RESOLVED');toastMsg('All safe conflicts resolved by priority arbitration');showPage('conflicts')}
+function runArbitration(){
+  const open=conflicts.filter(c=>c.status!=='RESOLVED');
+  if(!open.length){toastMsg('No open conflicts require arbitration');return;}
+  const now=performance.now();
+  let handled=0;
+  let waiting=0;
+  let rerouted=0;
+  open.forEach(c=>{
+    const ids=(c.pair.match(/R\d+/g)||[]);
+    const a=robots.find(r=>r.id===ids[0]);
+    const b=robots.find(r=>r.id===ids[1]);
+    if(!a||!b)return;
+
+    const yieldRobot=chooseYieldRobot(a,b);
+    const priorityRobot=yieldRobot.id===a.id?b:a;
+
+    // Reserve the junction for the higher-priority robot. The reservation
+    // is released automatically unless that robot reaches the junction first.
+    junctionReservations[c.node]=priorityRobot.id;
+    setTimeout(()=>{
+      if(junctionReservations[c.node]===priorityRobot.id) delete junctionReservations[c.node];
+    },4500);
+
+    priorityRobot.waitingFor=null;
+    priorityRobot.waitUntil=0;
+    if(priorityRobot.status==='WAITING' && priorityRobot.routingState!=='REROUTING'){
+      priorityRobot.status='NAVIGATING';
+      priorityRobot.speed=0;
+    }
+
+    yieldRobot.waitingFor=priorityRobot.id;
+    yieldRobot.avoidanceNode=c.node;
+    yieldRobot.rerouteReason=`Priority arbitration at ${c.node}`;
+    yieldRobot.waitUntil=now+2200;
+    yieldRobot.status='WAITING';
+    yieldRobot.speed=0;
+
+    const alt=safeAlternateRoute(yieldRobot,c.node);
+    if(alt && settings.autoReroute){
+      yieldRobot.originalRouteAtConflict=yieldRobot.route.slice();
+      yieldRobot.pendingAlternateRoute=alt;
+      yieldRobot.routingState='REROUTING';
+      const rr=reroutes.find(x=>x.robot===yieldRobot.id) || {id:`RR-${String(Date.now()).slice(-3)}`,robot:yieldRobot.id,from:'Current mission',reason:'Priority arbitration',via:'Alternate aisle',gain:'—',state:'ACTIVE'};
+      rr.state='ACTIVE';
+      rr.reason=`Priority arbitration at ${c.node}`;
+      rr.via=alt.join(' → ');
+      if(!reroutes.includes(rr)) reroutes.unshift(rr);
+      rerouted++;
+    }else{
+      yieldRobot.routingState='WAITING';
+      yieldRobot.pendingAlternateRoute=null;
+      waiting++;
+    }
+
+    c.status='RESOLVING';
+    collisionRobots.add(priorityRobot.id);
+    collisionRobots.add(yieldRobot.id);
+    events.unshift(['LIVE','Priority arbitration',`${priorityRobot.id} reserved ${c.node} · ${yieldRobot.id} yielding`,'amber']);
+    handled++;
+  });
+
+  if(handled){
+    toastMsg(`Arbitration complete · ${handled} conflict${handled===1?'':'s'} handled`);
+    showPage('conflicts');
+    if(activePage==='map') updateMapDom();
+  }else{
+    toastMsg('No eligible robot pairs found for arbitration');
+  }
+}
 function runReroute(){toastMsg('Route optimizer found 2 safe alternate paths');}
 function toggleSetting(key,value){settings[key]=value;toastMsg(`${key} ${value?'enabled':'disabled'}`);showPage(activePage)}
 function setRobotOffline(id,offline){const r=robots.find(x=>x.id===id);if(!r)return;settings.offlineRobots[id]=offline;if(offline){r.status='OFFLINE';r.speed=0;}else{r.status='IDLE';r.speed=0;}refreshSidebarStats();toastMsg(`${id} ${offline?'set offline':'back online'}`);showPage('settings')}
@@ -587,35 +656,3 @@ document.querySelector('#theme').onclick=()=>{dark=!dark;document.body.classList
 
 showPage('overview');
 requestAnimationFrame(animate);
-
-/* Demo authentication gate for Navसेतु. Frontend-only demo; not production security. */
-(function initNavsetuLogin(){
-  const loginScreen=document.querySelector('#loginScreen');
-  const app=document.querySelector('#app');
-  const form=document.querySelector('#loginForm');
-  const user=document.querySelector('#loginUser');
-  const pass=document.querySelector('#loginPass');
-  const error=document.querySelector('#loginError');
-  const toggle=document.querySelector('#togglePass');
-  const logout=document.querySelector('#logoutBtn');
-  if(!loginScreen||!app||!form) return;
-  const AUTH_KEY='navsetu_demo_authenticated';
-  function showDashboard(){loginScreen.style.display='none';app.classList.remove('auth-hidden');}
-  function showLogin(){loginScreen.style.display='flex';app.classList.add('auth-hidden'); user.value='';pass.value='';error.textContent='';}
-  if(sessionStorage.getItem(AUTH_KEY)==='true') showDashboard(); else showLogin();
-  form.addEventListener('submit',function(e){
-    e.preventDefault();
-    const u=user.value.trim(), p=pass.value;
-    if(u==='operator' && p==='navsetu123'){
-      sessionStorage.setItem(AUTH_KEY,'true');
-      error.textContent='';
-      showDashboard();
-      if(typeof toastMsg==='function') toastMsg('Signed in successfully');
-    } else {
-      error.textContent='Invalid username or password. Use the demo credentials below.';
-      pass.select();
-    }
-  });
-  toggle.addEventListener('click',function(){const hidden=pass.type==='password';pass.type=hidden?'text':'password';toggle.textContent=hidden?'Hide':'Show';});
-  if(logout) logout.addEventListener('click',function(){sessionStorage.removeItem(AUTH_KEY);showLogin();});
-})();
